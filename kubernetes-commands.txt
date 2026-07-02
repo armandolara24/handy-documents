@@ -1,0 +1,188 @@
+*-*-* Kubernetes *-*-*
+
+# contexts
+kubectl config get-contexts
+kubectl config use-context [context-name]
+$ change context to default docker-desktip context, but not needed if it is already selected 
+kubectl config use-context docker-desktop
+
+kubectl version
+kubectl version --help
+kubectl --help
+kubectl version --output=yaml
+
+kubectl get [resource]
+kubectl get nodes
+kubectl get pods
+# show resources from all namespaces
+kubectl get pods -A
+kubectl get pods -A --output=yaml
+kubectl get pods -A --output=wide
+# get a general overview of the cluster
+kubectl get all -A
+
+# docker vs k8s diference!
+docker [resource] [action]
+docker container ls
+kubectl [action] [resource]
+kubectl get nodes
+kubectl get pods
+
+# runs a pod
+kubectl run [name] [options]
+# run an ubuntu pod
+kubectl run my-ubuntu-pod --image=ubuntu -it
+exit
+# by default the pod is restarted after exiting
+# after exit, the following command is suggested, it resumes the terminal in the pod
+kubectl attach my-ubuntu-pod -c my-ubuntu-pod -i -t
+# delete pod
+kubectl delete pod my-ubuntu-pod
+
+kubectl version
+kubectl cluster-info
+
+# install helm
+brew install helm
+
+# Add kubernetes-dashboard repository
+helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
+# Install into the kubernetes cluster a helm release named "kubernetes-dashboard" using the kubernetes-dashboard chart
+helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard --create-namespace --namespace kubernetes-dashboard
+# to access the dashboard
+kubectl -n kubernetes-dashboard port-forward svc/kubernetes-dashboard-kong-proxy 8443:443
+kubectl -n kubernetes-dashboard port-forward svc/kubernetes-dashboard-kong-proxy 8443:443
+
+# create k6s user
+kubectl create serviceaccount dashboard-admin -n kubernetes-dashboard
+kubectl create clusterrolebinding dashboard-admin-binding --clusterrole=cluster-admin --serviceaccount=kubernetes-dashboard:dashboard-admin
+kubectl -n NAMESPACE create token SERVICE_ACCOUNT
+kubectl -n kubernetes-dashboard create token dashboard-admin
+
+kubectl run my-ubuntu-pod --image=ubuntu -it
+
+# process a yaml file
+kubectl apply -f pod.yaml
+
+# displays pod information
+kubectl get pod my-second-ubuntu-pod -o yaml
+
+# get into the container bash
+kubectl exec -it my-second-ubuntu-pod -- /bin/bash
+
+# create a new deployment
+kubectl create deployment [name] --image=[image]
+# example, --port if only for documentation, similar to EXPOSE in docker.
+kubectl create deployment wordpress-deployment --image=wordpress --replicas=3 --port=80
+
+kubectl get deployments
+kubectl get replicasets
+kubectl describe pod [one-of-the-deployment-pod-name]
+kubectl logs [one-of-the-deployment-pod-name]
+
+# edit an already running deployment
+kubectl edit deployment/wordpress-deployment
+
+# launch port-forwarding proxy which fowards calls from the local computer to the container
+# this functionality is only meant for deployments and should not be used in prod envs
+# do not use for prod env because if the pod crashed it won't work anymore
+kubectl port-forward deployment/wordpress-deployment 8080:80
+Forwarding from 127.0.0.1:8080 -> 80
+Forwarding from [::1]:8080 -> 80
+
+kubectl delete deployment wordpress-deployment
+
+# using labels 
+kubectl get deployments -l app=wordpress
+kubectl get deployments -l app=wordpress -A
+kubectl get deployments -l app=wordpress,version=1.0
+
+kubectl apply -f wordpress.yaml
+kubectl delete -f wordpress.yaml
+
+kubectl apply -f mariadb-secret.yaml
+kubectl apply -f mariadb.yaml
+kubectl get statefulsets
+kubectl get pods
+kubectl logs [first-pod-name]
+kubectl logs mariadb-statefulset-0
+
+kubectl delete statefulset my-statefulset
+kubectl delete statefulset mariadb-statefulset
+
+*-*-* Networking in Kubernetes *-*-*
+
+# macOS show network configuration 
+ipconfig -a
+# Linux show network configuration 
+ip addr show
+
+# within a k8s cluster there is a network different than the local computer
+# a pod would have its own unique IP address, it doesn't matter where it's run
+# it will always have a k8s-internal IP address.
+# By defaultm each pod can access all other pods/services.
+# This allows to think about each pod as a different physical machine.
+
+# get more info about pods
+kubectl get pods -o wide
+
+kubectl exec -it wordpress-deployment-5c5c4c775b-cbbzs -- /bin/bash
+apt update
+apt install iputils-ping
+# ping mariadb pod
+ping 10.1.0.31
+
+# get IP addresses from workloads
+kubectl get endpoints
+
+*-*-* Services *-*-*
+
+# services are a mechanism to make pods accessible from within a kubernetes network.
+# IP addresses will be the same even if pods change.
+
+# create service for deployment
+kubectl expose deployment wordpress-deployment
+kubectl get services
+apt install iputils-links
+links http://[service-IP]
+
+# DNS in Kubernetes
+apt update && apt install -y dnsutils
+nslookup mariadb-service
+
+# Servces type 
+ClusterIP (default): Cluster internal connections.
+LoadBalancer: Incoming connections.
+NodePort: ClusterIP + opens a port on all our nodes to public (30,000 -> 32,767)
+
+kubectl delete service my-service
+
+
+*-*-* Volumes *-*-* 
+
+# get persistent volume claims
+kubectl get pvc
+kubectl describe pvc local-pvc
+
+# get persistent volumes
+kubectl get pv
+
+
+*-*-* EKS *-*-* 
+
+# Install eksctl through brew https://eksctl.io/installation/
+brew tap weaveworks/tap
+brew install weaveworks/tap/eksctl
+
+# Create cluster through eksctl
+eksctl create cluster --full-ecr-access --alb-ingress-access --region us-east-1
+
+# Deploy an nginx deployment with its service
+kubectl apply -f nginx-nodeport.yaml
+
+# Remove cluster 
+eksctl delete cluster --name <your-cluster-name> --region us-east-1
+eksctl delete cluster --name exciting-painting-175762438 --region us-east-1
+eksctl delete cluster --name fabulous-badger-1757812763 --region us-east-1
+
+

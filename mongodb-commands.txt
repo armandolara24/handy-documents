@@ -1,0 +1,220 @@
+MongoDB commands
+
+*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+
+mongoimport --db=cooker --jsonArray examples.json
+mongoimport --db=cooker --jsonArray recipes.json
+mongoimport --db=cooker --jsonArray users.json
+
+mongosh
+
+show dbs;
+
+use cooker;
+
+doc = {"title" : "Tacos", "desc": "Yummie tacos", cook_time: 20};
+
+db.tacos.insertOne(doc)
+
+
+/* Find */
+
+db.tacos.find().pretty(); // shows all documents
+
+db.tacos.find(ObjectId("646aecb7d8fbb04974b23d72")); // shows unique document
+
+doc2 = {"title" : "Dos Tacos", "desc": "Yummie tacos", cook_time: 20};
+
+db.recipes.find({ "title" : "Tacos"}) // find document with title equals to Tacos.
+db.recipes.find({ "title" : "Tacos"})pretty()
+db.recipes.find({ "title" : "Tacos", "cook_time" : 20}).pretty() // two conditions.
+db.recipes.find({ "title" : "Tacos"}, { "title" : 1}).pretty() // get only the title (and id).
+db.recipes.find({ "title" : "Tacos"}, { "title" : 0}).pretty() // get all fields but the title.
+db.recipes.find({}, { "title" : 1}).pretty() // get all titles.
+db.recipes.find({"title" : { $regex: /taco/i }}, { "title" : 1}); // apply regex to title.
+
+show dbs;
+
+show collections;
+
+db.getName(); // get db name one is currently in.
+
+db.NewCollection01.insertOne({}); // create a new collection.
+
+
+/* Operators */
+
+db.recipes.find().count();
+db.recipes.find({}, { "title" : 1}).limit(2)
+db.recipes.find({}, { "title" : 1}).sort({"title":-1}); // -1 indicates desc order.
+db.recipes.find({}, { "title" : 1}).sort({"title":1}).skip(1);
+db.recipes.find({}, { "title" : 1}).sort({"title":1}).skip(1).limit(1);
+
+db.recipes.find({"cook_time" : {$lte : 30}}, {"title" : 1});
+
+db.recipes.find({"cook_time" : {$lte : 30}, "prep_time" : {$lte : 10}}, {"title" : 1}); // less than or equal.
+
+db.recipes.find({$or : [{"cook_time" : {$lte : 30}}, {"prep_time" : {$lte : 10}}]}, {"title" : 1}); // or operator.
+
+db.recipes.find({"tags": {$all : ["easy", "quick"]}}, {"title" : 1, "tags" : 1});
+
+db.recipes.find({"ingredients.name" : "egg"}, {"title" : 1});
+db.recipes.find({"ingredients" : {"name": "egg"}}, {"title" : 1}); // doesn't work.
+
+db.recipes.find({ "tags" : "mexican" }, {"title" : 1, "rating_avg" : 1, "likes_count" : 1 }).sort({ "rating_avg": -1 }).limit(4).sort({ "likes_count": -1 }); // exercise solution.
+
+db.recipes.find({ "likes" : { $all : [1, 35] } }, {"title" : 1, "likes" : 1}); // exercise solution.
+
+
+/* Updating docs */
+
+db.examples.find({}, {"title" : 1});
+
+db.examples.updateOne({ "title" : "Pizza" }, { $set : { "title" : "Thin crust pizza" } }); // Update one or more doc.
+
+db.examples.find({ "title" : "Thin crust pizza" });
+
+db.examples.updateOne({ "title" : "Thin crust pizza" }, { $set : { "vegan" : false } }); // $set creates the field if it doesn't exist.
+
+db.examples.updateOne({ "title" : "Thin crust pizza" }, { $unset : { "vegan" : 1 } }); // $unset removes the field.
+
+db.examples.find({ "title" : "Tacos" });
+
+
+/* Evental Consistency (atomic operation) */
+
+db.examples.updateOne({ "title" : "Tacos" }, { $inc : { "likes_count" : 1 }}); // update the value of a field without even knowing its value.
+db.examples.updateOne({ "title" : "Tacos" }, { $inc : { "likes_count" : -1 }}); // update the value of a field without even knowing its value.
+
+
+/* push & pull */
+
+db.examples.updateOne({ "title" : "Tacos" }, { $push : { "likes" : 60}}); // adds an element into an array.
+
+db.examples.find({ "title" : "Tacos" });
+
+db.examples.updateOne({ "title" : "Tacos" }, { $pull : { "likes" : 60}}); // removes an element from an array.
+
+
+/* Delete docs */
+
+db.examples.deleteOne({ "title" : "Tacos" }); // first matched doc is deleted. Matches work as in the find() method.
+
+db.examples.deleteMany(); // all matched docs are deleted.
+
+
+/* Indexes */ 
+
+db.examples.find({ "cook_time" : 10 }, {"title" : 1}).explain("executionStats"); // totalDocsExamined: 3
+
+db.examples.find({  _id: ObjectId("5e5e9c470d33e9e8e3891b35") }, {"title" : 1}).explain("executionStats"); // totalDocsExamined: 1 because it is indexed.
+
+db.recipes // then press tab twice to get methods.
+
+db.recipes.getIndexes();
+
+db.recipes.createIndex({ "title" : 1}); // create an index in asc order.
+
+db.recipes.find({ "title" : "Tacos" }, {"title" : 1}).explain("executionStats"); // totalDocsExamined: 1
+
+db.recipes.dropIndex("title_1");
+
+
+/* Capped collections: */
+
+1. Guarantees insertion order (don't need indexes).
+2. Limited by disk size or document count.
+3. Automatic deletion FIFO.
+
+db.createCollection("error_log" , { capped : true , size : 10000, max: 10000});
+
+/* Time series collections (new in MongoDB 5.0): */
+
+1. Data changes over time, but also has a key that doesn't change.
+2. Keeps metadata at point in time.
+
+Used for instance to track stock values, weather data.
+
+/* Store files using GridFS */
+GridFS is udes to deal with files that exceed the BSON size limit.
+It breaks up file contents into chunks in the form of documents.
+
+mongofiles put apple-pie.jpg --db=files // add file to db.
+
+mongofiles list --db=files --quiet // displays files.
+
+
+
+
+
+
+
+
+*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+
+// Install MongoDB in Windows Subsystem for Linux (WSL)
+
+https://github.com/aheckmann/m
+Windows 10 with Ubuntu on Windows
+https://apps.microsoft.com/store/detail/ubuntu-on-windows/9NBLGGH4MSV6?hl=en-us&gl=us&activetab=pivot%3Aoverviewtab
+
+In file
+/etc/wsl.conf, so Windows Path will not take the precedence
+add the lines
+[interop]
+appendWindowsPath=false
+then restart the computer
+
+Another alternative is:
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+https://stackoverflow.com/questions/63716587/in-wsl2-ubuntu-20-04-for-windows-10-nodejs-is-installed-but-npm-is-not-working
+
+sudo apt install nodejs (sudo apt install npm)?
+
+sudo npm install -g m
+
+sudo apt install curl
+
+m latest
+
+Installation to /home/arman/.local/bin complete!
+==> WARNING: $PATH does not include /home/arman/.local/bin
+
+
+export PATH="/home/arman/.local/bin:$PATH"
+             /home/arman/.local/bin
+			 
+mongod --version
+
+sudo apt install wget
+
+wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
+
+echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+
+sudo apt-get update
+
+sudo apt-get install -y mongodb-mongosh
+
+mongosh --version
+
+// Install MongoDB Database Tools
+
+sudo apt install mongodb-database-tools
+
+mongoimport
+// to check right installation
+
+mkdir -p mongodbessentials/mongod_only
+
+cd mongodbessentials
+
+mongod --dbpath mongod_only
+
+If: Aborted (core dumped)
+Then: 
+sudo mongod --repair --dbpath /home/arman/.local/bin/mongod
+
+
+*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-

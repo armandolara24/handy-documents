@@ -1,0 +1,4 @@
+cd C:\Users\arman\apache-tomcat-9.0.58\bin
+startup
+http://localhost:8080/
+C:\Users\arman\apache-tomcat-9.0.58\conf\tomcat-users.xml

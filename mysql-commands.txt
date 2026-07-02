@@ -1,0 +1,9 @@
+show databases;
+show tables;
+
+select * from orders;
+select * from order_item;
+select * from customer;
+select * from address;
+
+openssl req -x509 -out ssl-localhost\localhost.crt -keyout ssl-localhost\localhost.key -newkey rsa:2048 -nodes -sha256 -days 365 -config localhost.conf

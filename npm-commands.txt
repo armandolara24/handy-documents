@@ -1,0 +1,23 @@
+npm install package-name
+npm install package-name --save-dev
+
+npm install -g package-name
+npm install package-name -g
+
+npm outdated
+npm outdated -g
+
+npm update package-name
+npm install package-name
+npm install package-name@5.2.3 (latest version)
+
+npm uninstall package-name
+
+^1.x.x all minor and patches OK
+~5.12.x only minor OK
+
+npm cache verify
+npm cache clean --force
+
+npm -v
+npm audit

@@ -1,0 +1,349 @@
+
+*-*-*-*-* GitHub Ultimate: Master Git and GitHub - Beginner to Expert *-*-*-*-*
+
+*-*-*-*-* Useful unix commands *-*-*-*-*
+
+pwd
+cd [folder_name]
+ls -al
+clear # clears command line
+rm -rf [folder_name]
+rm [file_name]
+
+*-*-*-*-* Git set-up *-*-*-*-*
+
+git version
+# see configurations
+git config --global --list    
+git config --global user.name "armandolara24"
+git config --global user.email "armandolaramail@gmail"
+
+Install Nodepad++ and append exe file to PATH
+Restart Git Bash and create or update ~/.bash_profile in user's home directory
+notepad++ ~/.bash_profile 
+
+Then add a line such as below:
+alias npp='notepadd++ -multiInst -nosession'
+
+To configure Notepad++ as Git default editor execute:
+git config --global core.editor "notepad++ -multiInst -nosession"
+
+To test Notepad++ integration execute:
+git config --global -e
+
+Install P4Merge (visual merge tool), during installation only select Visual Merge Tool.
+
+git config --global diff.tool p4merge
+git config --global difftool.p4merge.path "C:/Program Files/Perforce/p4merge.exe"
+git config --global difftool.promt false
+git config --global merge.tool p4merge
+git config --global mergetool.p4merge.path "C:/Program Files/Perforce/p4merge.exe"
+git config --global mergetool.promt false
+
+*-*-*-*-* Initialization *-*-*-*-*
+
+git init my-new-project # create new repository
+rm -rf .git # in order to remove .git and make git stop managing working directory
+
+*-*-*-*-* Git States *-*-*-*-*
+
+Working directory (local)
+Stating area (local)
+Repository (.git folder) (local)
+Remote (remote)
+
+*-*-*-*-* First commit *-*-*-*-*
+
+git status # get git status
+git add [filename] # add file to staging environment
+git add . # add all files in current directory to staging area
+git commit -m "this is my first commit" # commit with inline commit message
+
+*-*-*-*-* Starting with existing project *-*-*-*-*
+
+git init . # dot means current folder
+
+*-*-*-*-* Commit and messages *-*-*-*-*
+
+git commit # the core editor configured with git will be used for commit message
+git commit --amend -am "my message" # ammend a commit
+
+*-*-*-*-* Commit details with log and show *-*-*-*-*
+
+git log # shows all commits part of current repository
+git show # shows the last commit and a diff containing all the changes, press q to exit
+
+*-*-*-*-* Express commit *-*-*-*-*
+
+git ls-files        # to check which files git is tracking
+git commit -am      # -a adds the file to staging area first, express commit.
+
+*-*-*-*-* Back out changes *-*-*-*-*
+
+git restore <file-name>             # (modern) discard changes in a single file
+git restore .                       # (modern) discard all changes
+git restore --staged <file-name>    # (modern) untage a file but keeps changes in working directory
+
+git reset HEAD [file_name]          # (old) unstage a file but keeps changes in working directory
+git reset -- [file-name]            # (old) unstage a file but keeps changes in working directory (same as above)
+
+git checkout -- [file_name]         # (old) discard changes in working directory
+git checkout .                      # (old) remove working directory, there is no way to bring all back.
+
+git clean -xdf                      # remove files which are not added/tracked by git. d for directories, f for forcefully.
+git reset HEAD~2                    # uncommit 2 commits.
+git reset HEAD^^                    # uncommit 2 commits.
+
+*-*-*-*-* History and making new commands with alias *-*-*-*-*
+
+git log                                         # display commits history
+git log --oneline
+git log --oneline --graph --decorate --all      # display branches history with graph-like format
+git config --global alias.hist "log --oneline --graph --decorate --all"
+git hist                                        # run command defined in the line above
+
+git help log                                    # display log command options
+git config --global --list                      # display configurations
+
+*-*-*-*-* Rename and delete files *-*-*-*-*
+
+git mv oldname.txt newname.txt 
+#renaming commited files, new commit is necessary after this
+
+git rm file.txt 
+#removing files with git, if done using this command instead of OS command we get the extra benefit of deleting the tracking as well. A commit after this command is necessary.
+
+
+*-*-*-*-* Managing files outside git *-*-*-*-*
+
+git add -u # -u is for git to update the file deletions made with OS commands, additions are not updated
+git add -A # catches all modifications (additions and deletions) in the working directoy and passes them to stage env
+
+*-*-*-*-* Excluding unwanted files *-*-*-*-*
+
+npp .gitignore
+
+git add .gitignore
+git commit -m 'Adding .gitignore file' 
+create a file named «.gitignore» to get git to ignore files, e.g., by «git add .».
+«.gitignore» file should include the names of the files or directories which should be ignored, each name in a new line (it also accepts wildcards), e.g., 
+filename.txt
+/dirname
+*.log
+*.orig
+«.gitignore» has to be commited to repo in order to take effect
+
+*-*-*-*-* Advanced Section *-*-*-*-*
+
+*-*-*-*-* Create and move to branch *-*-*-*-*
+
+git switch -b <branch-name>         # (modern) create a new branch and move to it
+git switch <branch-name>            # (modern) move to another branch
+
+git checkout -b <branch-name>       # (old) create new branch and move to it
+git checkout <branch-name>          # (old) change to another branch
+
+git merge <branch-name>             # (while being in the branch where the changes will be added)
+
+*-*-*-*-* Comparing differences *-*-*-*-*
+get hist 
+# previously user-defined command to check full commit history, two commit ids are obtained from here
+
+git diff [old_commit_id] [newer_commit_id] 
+#to see differences between stage files and working directory files, HEAD special pointer can be used. HEAD is a pointer pointing to the last commit by default
+
+git difftool [old_commit_id] [newer_commit_id] 
+#same as get diff but with tool
+
+git diff 
+# without arguments, it shows the difference between HEAD and working directory
+
+git difftool 
+# without arguments, it shows the difference between HEAD and working directory
+
+git help diff 
+# for much more diff options, its very powerful
+
+*-*-*-*-* Simple branching example *-*-*-*-*
+
+A branch is a timeline of commits.
+git branch                              # display branches
+git branch -a                           # display all branches (including remote)
+git switch -b <branch-name>             # create branch and move to the new branch
+git diff                                # visualize difference between working directory and last commit
+git diff <branch-one> <branch-two>      # visualize differences between branches
+git switch master                       # move to master branch
+git merge <branch-name>                 # execute from master branch to merge a certain branch to master branch. If after this, HEAD points to master and the branch then a fast-forward merge took place.
+git branch -d <branch-name>             # delete branch locally
+git push origin --delete <branch-name>  # delete remote branch
+git mergetool                           # merge conflicts
+git fetch -p                            # update local repository deleting local branches that were deleted remotely
+
+*-*-*-*-* Conflict resolution *-*-*-*-*
+
+After having purposely modified the same file in master and another branch so that while merging there is a conflict. After executing the command:
+git merge [branch_with_conflict]
+
+The command line will show (master|MERGING) indicating that command line is in merging state, additionally, the conflicting files names will be shown.
+Catting the files:
+cat [name_of_conclicting_file]
+will show up which parts of the file are conflicting.
+
+git mergetool # executes previously configured merge tool
+After saving the fixed changes, commit can be applied and command line then will change from (master|MERGING) to normal (master).
+
+*-*-*-*-* Saving work in progess with stashing *-*-*-*-*
+
+git stash # in order to hide WIP temporarily
+git stash save "my description"
+git stash list # shows stashes
+git stash pop # this should be executed to go back to the hidden WIP and delete the stash
+git stash apply # it doesn't delete from stash
+git stash apply stash@{0} # it doesn't delete from stash
+git stash clean # removes all stashes?
+
+*-*-*-*-* Time travel with reset and reflog *-*-*-*-*
+
+git reset --soft [commit_id]    # repoint HEAD, preserve working directory and staging area
+
+git reset [commit_id]           # repoint HEAD and remove files from staging area
+git reset --mixed [commit_id]   # repoint HEAD and remove files from staging area
+
+git reset --hard [commit_id]    # repoint HEAD, removes files from staging area and working directory
+
+git log --oneline # shows all logs until HEAD with one line only of each one of them
+git reflog # displays commit ids as "git log" but also shows all previous actions
+With reset and reflog it is possible to reset any commit made history.
+
+*-*-*-*-* SSH *-*-*-*-*
+
+mkdir .ssh   #Execute this in users directory
+cd .ssh/
+ssh-keygen -t rsa -C "armandolaramail@gmail.com"
+Then add the id_rsa.pub public key to GitHub website in account settings SSH
+ssh -T git@GitHub.com   # to test connection to remote repository
+
+*-*-*-*-* Creating a local copy with clone *-*-*-*-*
+
+git clone https://GitHub.com/armandolara24/reponame.git # when there is already a remote repository and we want to clone it locally
+git clone https://GitHub.com/armandolara24/reponame.git [folder_name] # specifying folder name for local repository
+git clone https://github.com/LinkedInLearning/javascript-essential-training-2832077.git
+
+*-*-*-*-* Public back to GitHub *-*-*-*-*
+
+git push origin master 
+# to commit to remote repo, then enter username and password
+
+git push 
+# default behaviour depends on git version, in newer versions >=2.0 default is simple, which only pushes the current branch to the corresponding remote branch that 'git pull' uses to update the current branch.
+
+git config --global push.default simple 
+# to configure simple as default behaviour (just to make sure and hide warning)
+
+*-*-*-*-* Fetch and pull *-*-*-*-*
+
+git fetch 
+# fetches from remote repo, it is non-destructive, git status can be executed later to verify that git pull can be executed directly instead of git merge.
+
+git pull
+# fetches from remote repo and merges changes to current local repo
+Doing a fetch/pull is best practice before doing a push.
+# a PULL is two commands in one, it is a fetch and merge.
+
+*-*-*-*-* Backing out changes from remote respository *-*-*-*-*
+
+git revert [commit-id-to-remove] # reverts/removes a commit from remote repository (git push has to be executed after this). It creates a new commit which cancels-out the previous commit.
+git push
+
+
+*-*-*-*-* Updating repository and remote references *-*-*-*-*
+
+git remote -v #to check if there is a remote repository connected
+git remote remove origin # to remove origin remote connection
+git remote add origin https://GitHub.com/armandolara24/PyGaze.git #in this case "origin" is the name given to the remote repository
+git remote set-url origin git://new.url.here # to re-direct remote connection
+git remote show origin # to get additional info about origin
+git push -u origin master --tags # -u sets up a tracking branch relationship between master branch in the local and the master branch in the remote repository. --tags is to send all the text in the local repository up to GitHub.
+
+*-*-*-*-* Cleaning up by deleting branches and references *-*-*-*-*
+
+# when executed from master it merges both branches
+git merge [branch-name]
+# it deletes [branch-name] branch in remote repo from local env
+git push origin :[branch-name] 
+
+*-*-*-*-* Pull with rebase *-*-*-*-*
+
+Rebase rewinds the current commits that are on your branch to a point where the branch you're merging in originally diverged; then playing back the commits that happend on the branch you're wanting to bring in; and then, after that, playing on top of that any commits that have happened on the branch you're currently on. This is a good strategy when you're working on something and you want to make sure that your branch is ahead of whatever is going on on the remote side.
+# it should show a diverge message
+git status 
+# first rewinds local branch and then applies any commit in local branch
+git pull --rebase  
+use 'git hist' to track the changes
+# to push changes made locally
+git push
+
+*-*-*-*-* Setting the default branch *-*-*-*-*
+
+It's a good practice to create a 'develop' branch since in some workflows the 'master' branch represents what is in production, and then 'develop' merges with master when code reaches production release status.
+
+*-*-*-*-* Pull conflict how to solve them *-*-*-*-*
+
+git pull # this will return a merge conclict message
+git mergetool # executes pre-configured merge tool 
+After conclict has been manually resolved, then commit
+git commit -am "Conclict resovled"
+If everything went well we'll ve out of MERGING status.
+git status # it will show that there is one file laying aroung [file-name].orig
+rm *.orig # to delete *.orig files
+
+*-*-*-*-* Combine Multiple Git Commits into One *-*-*-*-*
+
+git rebase -i HEAD~2 # instead of 2, you can place the number of commits to be combined.
+# then type "squash" instead of "pick" in the commits to be squashed.
+git push --force origin [branch-name]
+
+*-*-*-*-* Making special events with tagging *-*-*-*-*
+
+Tags are labels that can be put to commit points, if no commit points is speficied by default it would be the current commit or HEAD.
+git tag # lists tags if they exists
+git tag --list # displays all tags
+git tag [tag_name] # creates a tag
+git tag -d [tag_name] # deletes a tag locally
+git tag -a v0.1-alpha -m "Release 0.1 (Alpha)" # -a for annotated tag, v1.0 is the tag name.
+git show [tag_name] # displays the annotated tag info
+git push origin [tag_name] # to push into remote repository an specific tag
+git push --tags # to push all tags
+
+*-*-*-*-* Updating tags: Creating floating tags *-*-*-*-*
+
+git tag -f [tag-name-to-modify] [commi t-id] # updates where a tag is pointing, if no [commit-id] is provided the default is HEAD
+git pull
+git push origin develop # this doesn't update the tag update
+git push origin [tag-name] # it will show that tag already exists
+git push --force origin [tag-name] # --force will forcefully push updating the tag
+
+*-*-*-*-* Local tags (a bit of review) *-*-*-*-*
+
+Simple tags:
+git tag [tag-name-1] develop # creates a tag pointing to HEAD from develop branch
+git tag [tag-name-2] master # creates a tag pointing to HEAD from master branch
+Release tags:
+git tag -a v0.1-alpha -m "Release 1.0 (Alpha)" 85fe102 # creates an annotated tag
+git show v0.1-alpha # shows info from specific tag, only works for annotated tags
+
+*-*-*-*-* Pushing local tags to GitHub *-*-*-*-*
+
+git pull # sync both repos
+git push # by default tags or releases are not pushed
+git push origin [tag-name] # one tag is pushed to remote repo
+git push --tags # pushes all local tags into remote repo
+
+*-*-*-*-* Deleting tags *-*-*-*-*
+
+After having deleted a tag in GitHub
+git status # to see current state
+git tag # to list the current tags, a deleted tag will still appear
+git fetch -p # updates all current references to be in sync
+git tag -d [tag-name] # deletes a tag locally
+git push origin :[tag-name] # deletes a tag in remote repo from local env
