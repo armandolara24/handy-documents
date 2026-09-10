@@ -73,10 +73,11 @@ git config --global mergetool.promt false
 ## First Commit
 
 | Command                                   | Description                                        |
-| ----------------------------------------- | -------------------------------------------------- |
+|-------------------------------------------|----------------------------------------------------|
 | `git status`                              | get git status                                     |
 | `git add <filename>`                      | add file to staging environment                    |
 | `git add .`                               | add all files in current directory to staging area |
+| `git add -u .`                            | stage already tracked files only                   |
 | `git commit -m "this is my first commit"` | commit with inline commit message                  |
 
 ## Starting with Existing Project
@@ -108,18 +109,19 @@ git config --global mergetool.promt false
 
 ## Back Out Changes
 
-| Command                            | Description                                                                           |
-| ---------------------------------- | ------------------------------------------------------------------------------------- |
-| `git restore <file-name>`          | (modern) discard changes in a single file                                             |
-| `git restore .`                    | (modern) discard all changes                                                          |
-| `git restore --staged <file-name>` | (modern) untag a file but keep changes in working directory                           |
-| `git reset HEAD <file-name>`       | (old) unstage a file but keep changes in working directory                            |
-| `git reset -- <file-name>`         | (old) unstage a file but keep changes in working directory (same as above)            |
-| `git checkout -- <file-name>`      | (old) discard changes in working directory                                            |
-| `git checkout .`                   | (old) remove working directory, there is no way to bring all back.                    |
-| `git clean -xdf`                   | remove files which are not added/tracked by git. d for directories, f for forcefully. |
-| `git reset HEAD~2`                 | uncommit 2 commits.                                                                   |
-| `git reset HEAD^^`                 | uncommit 2 commits.                                                                   |
+| Command                           | Description                                                                               |
+|-----------------------------------|-------------------------------------------------------------------------------------------|
+| `git restore <file-name>`         | (modern) discard changes in a single file                                                 |
+| `git restore .`                   | (modern) discard all changes                                                              |
+| `git restore --staged <file-name>`| (modern) untag a file but keep changes in working directory                               |
+| `git clean -fd`                   | remove files not added/tracked. d - directories, f - forcefully, -x ignored by .gitignore |
+| `git clean -fdx`                  | same as above but also -x ignored by .gitignore                                           |
+| `git reset HEAD~2`                | uncommit 2 commits.                                                                       |
+| `git reset HEAD^^`                | uncommit 2 commits.                                                                       |
+| `git reset HEAD <file-name>`      | (old) unstage a file but keep changes in working directory                                |
+| `git reset -- <file-name>`        | (old) unstage a file but keep changes in working directory (same as above)                |
+| `git checkout -- <file-name>`     | (old) discard changes in working directory                                                |
+| `git checkout .`                  | (old) remove working directory, there is no way to bring all back.                        |
 
 ## History and Making New Commands with Alias
 
